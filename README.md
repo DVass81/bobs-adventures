@@ -79,3 +79,24 @@ pnpm --filter @workspace/api-spec run codegen
 | PATCH/DELETE | `/api/campgrounds/:id` | Update / delete campground |
 | GET | `/api/stats/summary` | Travel statistics summary |
 | GET | `/api/stats/recent-entries` | Recent journal entries feed |
+
+## Git Workflow
+
+This project is hosted at **https://github.com/DVass81/bobs-adventures**.
+
+To sync the full codebase with the GitHub repository, use Replit's built-in Git panel (the branch/git icon in the left sidebar). From there you can:
+
+- **Push** your latest changes to `origin/main` on GitHub
+- **Pull** to fetch changes made directly on GitHub
+- **View** commit history and diffs
+
+When working locally after cloning:
+```bash
+git clone https://github.com/DVass81/bobs-adventures.git
+cd bobs-adventures
+pnpm install
+# Set DATABASE_URL in your .env, then:
+pnpm --filter @workspace/db run push   # apply schema
+pnpm --filter @workspace/api-server run dev   # start API
+pnpm --filter @workspace/bobs-adventures run dev  # start frontend
+```
