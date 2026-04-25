@@ -1,0 +1,715 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Bob's Adventures API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: journal
+    description: Journal entries
+  - name: photos
+    description: Photo management
+  - name: locations
+    description: Travel locations
+  - name: campgrounds
+    description: Campground notes
+  - name: stats
+    description: Travel statistics
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /journal:
+    get:
+      operationId: listJournalEntries
+      tags: [journal]
+      summary: List all journal entries
+      parameters:
+        - name: location_id
+          in: query
+          required: false
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of journal entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JournalEntry"
+    post:
+      operationId: createJournalEntry
+      tags: [journal]
+      summary: Create a journal entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateJournalEntryBody"
+      responses:
+        "201":
+          description: Created journal entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+
+  /journal/{id}:
+    get:
+      operationId: getJournalEntry
+      tags: [journal]
+      summary: Get a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Journal entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateJournalEntry
+      tags: [journal]
+      summary: Update a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateJournalEntryBody"
+      responses:
+        "200":
+          description: Updated journal entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteJournalEntry
+      tags: [journal]
+      summary: Delete a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /photos:
+    get:
+      operationId: listPhotos
+      tags: [photos]
+      summary: List all photos
+      parameters:
+        - name: journal_id
+          in: query
+          required: false
+          schema:
+            type: ["integer", "null"]
+        - name: location_id
+          in: query
+          required: false
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of photos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Photo"
+    post:
+      operationId: createPhoto
+      tags: [photos]
+      summary: Add a photo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePhotoBody"
+      responses:
+        "201":
+          description: Created photo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+
+  /photos/{id}:
+    delete:
+      operationId: deletePhoto
+      tags: [photos]
+      summary: Delete a photo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /locations:
+    get:
+      operationId: listLocations
+      tags: [locations]
+      summary: List all travel locations
+      responses:
+        "200":
+          description: List of locations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Location"
+    post:
+      operationId: createLocation
+      tags: [locations]
+      summary: Add a travel location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLocationBody"
+      responses:
+        "201":
+          description: Created location
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+
+  /locations/{id}:
+    get:
+      operationId: getLocation
+      tags: [locations]
+      summary: Get a location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Location
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateLocation
+      tags: [locations]
+      summary: Update a location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLocationBody"
+      responses:
+        "200":
+          description: Updated location
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteLocation
+      tags: [locations]
+      summary: Delete a location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /campgrounds:
+    get:
+      operationId: listCampgrounds
+      tags: [campgrounds]
+      summary: List all campground notes
+      responses:
+        "200":
+          description: List of campgrounds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campground"
+    post:
+      operationId: createCampground
+      tags: [campgrounds]
+      summary: Add a campground note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampgroundBody"
+      responses:
+        "201":
+          description: Created campground
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campground"
+
+  /campgrounds/{id}:
+    patch:
+      operationId: updateCampground
+      tags: [campgrounds]
+      summary: Update a campground note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCampgroundBody"
+      responses:
+        "200":
+          description: Updated campground
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campground"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCampground
+      tags: [campgrounds]
+      summary: Delete a campground note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /stats/summary:
+    get:
+      operationId: getTravelStats
+      tags: [stats]
+      summary: Get travel statistics summary
+      responses:
+        "200":
+          description: Travel stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TravelStats"
+
+  /stats/recent-entries:
+    get:
+      operationId: getRecentEntries
+      tags: [stats]
+      summary: Get recent journal entries with location info
+      responses:
+        "200":
+          description: Recent entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecentEntry"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    JournalEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        mood:
+          type: ["string", "null"]
+        locationId:
+          type: ["integer", "null"]
+        locationName:
+          type: ["string", "null"]
+        visitDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - title
+        - content
+        - mood
+        - locationId
+        - locationName
+        - visitDate
+        - createdAt
+        - updatedAt
+
+    CreateJournalEntryBody:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        mood:
+          type: ["string", "null"]
+        locationId:
+          type: ["integer", "null"]
+        visitDate:
+          type: string
+      required:
+        - title
+        - content
+        - visitDate
+
+    UpdateJournalEntryBody:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        mood:
+          type: ["string", "null"]
+        locationId:
+          type: ["integer", "null"]
+        visitDate:
+          type: string
+
+    Photo:
+      type: object
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        caption:
+          type: ["string", "null"]
+        journalId:
+          type: ["integer", "null"]
+        locationId:
+          type: ["integer", "null"]
+        locationName:
+          type: ["string", "null"]
+        takenAt:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - url
+        - caption
+        - journalId
+        - locationId
+        - locationName
+        - takenAt
+        - createdAt
+
+    CreatePhotoBody:
+      type: object
+      properties:
+        url:
+          type: string
+        caption:
+          type: ["string", "null"]
+        journalId:
+          type: ["integer", "null"]
+        locationId:
+          type: ["integer", "null"]
+        takenAt:
+          type: string
+      required:
+        - url
+        - takenAt
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        state:
+          type: string
+        description:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        arrivalDate:
+          type: ["string", "null"]
+        departureDate:
+          type: ["string", "null"]
+        milesFromHome:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - state
+        - description
+        - latitude
+        - longitude
+        - arrivalDate
+        - departureDate
+        - milesFromHome
+        - createdAt
+
+    CreateLocationBody:
+      type: object
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+        description:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        arrivalDate:
+          type: ["string", "null"]
+        departureDate:
+          type: ["string", "null"]
+        milesFromHome:
+          type: ["number", "null"]
+      required:
+        - name
+        - state
+
+    UpdateLocationBody:
+      type: object
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+        description:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        arrivalDate:
+          type: ["string", "null"]
+        departureDate:
+          type: ["string", "null"]
+        milesFromHome:
+          type: ["number", "null"]
+
+    Campground:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        locationId:
+          type: ["integer", "null"]
+        locationName:
+          type: ["string", "null"]
+        rating:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+        hookups:
+          type: string
+        pricePerNight:
+          type: ["number", "null"]
+        wouldReturn:
+          type: boolean
+        stayDate:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - locationId
+        - locationName
+        - rating
+        - notes
+        - hookups
+        - pricePerNight
+        - wouldReturn
+        - stayDate
+        - createdAt
+
+    CreateCampgroundBody:
+      type: object
+      properties:
+        name:
+          type: string
+        locationId:
+          type: ["integer", "null"]
+        rating:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+        hookups:
+          type: string
+        pricePerNight:
+          type: ["number", "null"]
+        wouldReturn:
+          type: boolean
+        stayDate:
+          type: ["string", "null"]
+      required:
+        - name
+        - hookups
+        - wouldReturn
+
+    UpdateCampgroundBody:
+      type: object
+      properties:
+        name:
+          type: string
+        locationId:
+          type: ["integer", "null"]
+        rating:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+        hookups:
+          type: string
+        pricePerNight:
+          type: ["number", "null"]
+        wouldReturn:
+          type: boolean
+        stayDate:
+          type: ["string", "null"]
+
+    TravelStats:
+      type: object
+      properties:
+        totalLocations:
+          type: integer
+        totalJournalEntries:
+          type: integer
+        totalPhotos:
+          type: integer
+        totalCampgrounds:
+          type: integer
+        totalMilesTraveled:
+          type: number
+        statesVisited:
+          type: integer
+        currentSeason:
+          type: string
+      required:
+        - totalLocations
+        - totalJournalEntries
+        - totalPhotos
+        - totalCampgrounds
+        - totalMilesTraveled
+        - statesVisited
+        - currentSeason
+
+    RecentEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        mood:
+          type: ["string", "null"]
+        locationName:
+          type: ["string", "null"]
+        locationState:
+          type: ["string", "null"]
+        visitDate:
+          type: string
+        photoCount:
+          type: integer
+      required:
+        - id
+        - title
+        - content
+        - mood
+        - locationName
+        - locationState
+        - visitDate
+        - photoCount
